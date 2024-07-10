@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GirlyThings | Tendencias</title>
+    <meta name="description" content="Stay updated with the latest fashion trends on GirlyThings.">
+    <meta name="keywords" content="fashion, blog, style, trends, beauty, lifestyle">
+    <!-- Bootstrap CSS -->
+    <link rel="icon" href="../static/img/lapiz-labial.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #F2FAFA;
+            color: #333;
+            line-height: 1.6;
+            padding-top: 70px; /* Para dar espacio entre el navbar y el contenido */
+        }
+        .navbar {
+            background-color: #8C5188;
+        }
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .navbar-brand span {
+            color: #BAA5B0;
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .navbar-toggler-icon {
+            background-image: none;
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after,
+        .navbar-toggler-icon div {
+            content: '';
+            background-color: #fff;
+            height: 3px;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s;
+        }
+        .navbar-toggler-icon::before {
+            top: 0;
+        }
+        .navbar-toggler-icon::after {
+            bottom: 0;
+        }
+        .navbar-toggler-icon div {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .post {
+            background-color: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .post:hover {
+            transform: translateY(-5px);
+        }
+        .post img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0;
+        }
+        .post .post-content {
+            padding: 20px;
+        }
+        .post h2 {
+            font-size: 1.5em;
+            color: #ff69b4;
+            margin-top: 0;
+        }
+        .post p.category {
+            font-size: 1em;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        .post .btn {
+            background-color: #ff69b4;
+            border: none;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .post .btn:hover {
+            background-color: #ffb6c1;
+        }
+        footer {
+            background-color: #3C1239;
+            color: #fff;
+            text-align: center;
+            padding: 1em 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+
+        <a class="navbar-brand" href="/">Girly<span>Things</span></a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon">
+                <div></div>
+            </span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/create_post">Crear post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Lo más reciente</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/makeup">Makeup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/outfits">Outfits</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hair">Hair stuffs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            {% for post in posts %}
+            <div class="col-md-6 col-lg-4">
+                <div class="post">
+                    <img src="../{{ post.image_path }}" alt="{{ post.title }}">
+                    <div class="post-content">
+                        <p class="category">Categoría: {{ post.category.category_name }}</p>
+                        <h2>{{ post.title }}</h2>
+                        <p class="date">{{ post.created_at.strftime('%d %b %Y %H:%M') }}</p>
+                        <p class="comments-count">Comentarios: {{ post.comments|length }}</p>
+                        <a href="{{ url_for('view_post', post_id=post.post_id) }}" class="btn btn-primary">Ver más</a>
+                        {% if current_user.is_authenticated and post.user_id == current_user.user_id %}
+                        <a href="{{ url_for('edit_post', post_id=post.post_id) }}" class="btn btn-primary">Editar</a>
+                    {% endif %}
+                    {% if post.can_delete() %}
+        <form action="{{ url_for('delete_post', post_id=post.post_id) }}" method="post" id="delete-post-form">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024, GirlyThings. All rights reserved.</p>
+        <p>Design and coding by Jamie</p>
+    </footer>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

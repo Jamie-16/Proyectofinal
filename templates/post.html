@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            padding-top: 70px; /* Espacio para el navbar */
+        }
+        .navbar {
+            background-color: #ffb6c1;
+        }
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .navbar-brand span {
+            color: #ff69b4;
+        }
+        .post-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .post-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .post-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .post-body {
+            font-size: 1.1em;
+            color: #333;
+            line-height: 1.8;
+        }
+        .post-img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .comment-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .comment-header {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .comment {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .comment-body {
+            font-size: 1em;
+            color: #333;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="/">Girly<span>Things</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/create_post">Crear post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Lo más reciente</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/makeup">Makeup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/outfits">Outfits</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hair">Hair stuffs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container mt-5">
+        <div class="post-container">
+            <h1 class="post-title">{{ post.title }}</h1>
+            <p class="post-meta">Categoría: {{ post.category.category_name }} | Publicado el {{ post.created_at.strftime('%d %b %Y %H:%M') }}</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="../{{ post.image_path }}" alt="{{ post.title }}" class="post-img">
+                </div>
+                <div class="col-md-6">
+                    <div class="post-body">
+                        {{ post.body | safe }}
+                    </div>
+                    <p class="post-meta">Escrito por: {{ post.user.username }} </p>
+                </div>
+            </div>
+        </div>
+        
+         <!-- Contenedor de comentarios -->
+         <div class="comment-container">
+            <h2 class="comment-header">Comentarios</h2>
+            
+            {% for comment in comments %}
+            <div class="comment">
+                <p class="comment-meta">Usuario: {{ comment.user.username }} | Puntuación: {{ comment.rating }}</p>
+                <p class="comment-body">{{ comment.body }}</p>
+            </div>
+            {% endfor %}
+            
+            <!-- Formulario para agregar un comentario -->
+            <form action="{{ url_for('add_comment', post_id=post.post_id) }}" method="POST">
+                <div class="form-group">
+                    <label for="comment-body">Comentario:</label>
+                    <textarea class="form-control" id="comment-body" name="body" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rating">Puntuación:</label>
+                    <select class="form-control" id="rating" name="rating" required>
+                        <option value="1">1 - Malo</option>
+                        <option value="2">2 - Regular</option>
+                        <option value="3">3 - Bueno</option>
+                        <option value="4">4 - Muy Bueno</option>
+                        <option value="5">5 - Excelente</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar Comentario</button>
+            </form>
+        </div>
+        
+        
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Volver</a>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
